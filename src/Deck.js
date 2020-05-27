@@ -10,12 +10,21 @@ const numHands = 2;
 class Deck extends Component{
   constructor(props){
     super(props);
-    this.state = {deck: null};
+    this.state = {
+      deck: null,
+      gameState: 0,
+    };
   }
 
   async componentDidMount(){
+    this.newGame();
+  }
+
+  async newGame() {
     let deck = await axios.get(`${API_BASE_URL}/new/shuffle/`);
-    this.setState({deck: deck.data});
+    this.setState(st => ({
+      deck: deck.data
+    }));
   }
 
   render() {
@@ -27,7 +36,10 @@ class Deck extends Component{
         <div className='Deck'>
           <h1 class='Deck-title'>Blackjack</h1>
           <p class='subtitle'> Try to beat the dealer by getting 21</p>
-          {hands}
+          <button className='Deck-btn' onClick={this.newGame}>New Game</button>
+          <div class='Hand-area'>
+            {hands}
+          </div>
         </div>
     )
   }

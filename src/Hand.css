@@ -1,10 +1,11 @@
 .Hand {
-
+ width: 400px;
 }
 
 .Hand-Card-Area {
-  margin-top: 80px;
+  margin: 40px 0 40px 0;
   height: 140px;
+  padding-left: 22.5px;
 }
 
 

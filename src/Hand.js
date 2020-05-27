@@ -6,7 +6,7 @@ import './Hand.css';
 class Hand extends Component{
   constructor(props){
     super(props);
-    this.state = {deck: null, drawn:[]};
+    this.state = {deck: this.props.deck, drawn:[], total: 0, lose: false};
     this.getCard = this.getCard.bind(this);
   }
 
@@ -15,12 +15,22 @@ class Hand extends Component{
     try {
       let cardUrl = `${this.props.API_BASE_URL}/${deck_id}/draw/`;
       let cardRes = await axios.get(cardUrl);
-      console.log(cardRes.data.remaining);
+      console.log(`Cards remaining: ${cardRes.data.remaining}`);
 
       if (!cardRes.data.success){
         throw new Error("No more cards");
       } else {
         let card = cardRes.data.cards[0];
+        var cardAbsValue = 0;
+        if (['ACE', 'KING', 'QUEEN', 'JACK'].some(res => res.includes(card.value))) {
+          cardAbsValue = 10;
+        } else if ('ACE' === card.value){
+          cardAbsValue = 11;
+        }
+        
+        else {
+          cardAbsValue = card.value;
+        }
         this.setState(st => ({
           drawn: [
             // take all objects in array of drawn cards and add the new card obj
@@ -32,9 +42,44 @@ class Hand extends Component{
             }
           ]
         }));
+        this.setState(st => ({
+          total: st.total + parseInt(cardAbsValue)
+        }));
       }
+      console.log(`Current total: ${this.state.total}`);
     } catch (err){
       console.log(err);
+    }
+
+    // TODO: Broken, says you lose before it displays 21.
+    if (this.state.total > 21){
+      // TODO: Add condition that if bust with an ace, take off 10 from total
+      this.setState(st => ({
+        lose: true
+      }));
+      this.lose();
+    } else if (this.state.total === 21){
+      this.win();
+    }
+  }
+
+  // TODO
+  lose() {
+    alert('You BUSTED');
+  }
+
+  // TODO
+  stay(){
+    console.log('stay');
+  }
+
+  //TODO
+  // set up dealer and include win conditions other than just hitting 21
+  win() {
+    if (this.state.total === 21){
+      alert('BLACKJACK! YOU WIN!');
+    } else {
+      alert('You Win!');
     }
   }
 
@@ -43,11 +88,11 @@ class Hand extends Component{
     const cards = this.state.drawn.map ( c =>(
       <Card key={c.id} name={c.name} image={c.image}/>
     ))
-
     return (
-      <div>
+      <div class='Hand'>
         <div className='Hand-Card-Area'>{cards}</div>
         <button className='Hand-btn' onClick={this.getCard}>Hit Me</button>
+        <button className='Hand-btn' onClick={this.stay}>Stay</button>
       </div>
     )
   }
