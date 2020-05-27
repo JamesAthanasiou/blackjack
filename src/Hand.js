@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
 import Card from './Card';
 import axios from 'axios';
+import './Hand.css';
 
 class Hand extends Component{
   constructor(props){
-      super(props);
-      this.state = {deck: null, drawn:[]};
-      this.getCard = this.getCard.bind(this);
+    super(props);
+    this.state = {deck: null, drawn:[]};
+    this.getCard = this.getCard.bind(this);
   }
 
   async getCard(){
@@ -38,18 +39,15 @@ class Hand extends Component{
   }
 
   render() {
-
     // build array of card props
     const cards = this.state.drawn.map ( c =>(
       <Card key={c.id} name={c.name} image={c.image}/>
     ))
-  
+
     return (
       <div>
-        <div className='Deck-Card-Area'>
-          <div className='Deck-Card-Area'>{cards}</div>
-        </div>
-        <button className='Deck-btn' onClick={this.getCard}>Hit Me</button>
+        <div className='Hand-Card-Area'>{cards}</div>
+        <button className='Hand-btn' onClick={this.getCard}>Hit Me</button>
       </div>
     )
   }
