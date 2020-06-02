@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-// import Card from './Card';
 import Hand from './Hand';
 import axios from 'axios';
 import './Deck.css';
@@ -14,15 +13,17 @@ class Deck extends Component{
       deck: null,
       gameState: 0,
     };
+    this.newGame = this.newGame.bind(this);
   }
 
+  // TODO: clear old cards
   async componentDidMount(){
     this.newGame();
   }
 
   async newGame() {
     let deck = await axios.get(`${API_BASE_URL}/new/shuffle/`);
-    this.setState(st => ({
+    this.setState(() => ({
       deck: deck.data
     }));
   }
@@ -33,14 +34,14 @@ class Deck extends Component{
       hands.push(<Hand API_BASE_URL={API_BASE_URL} deck={this.state.deck}/>)
     }
     return (
-        <div className='Deck'>
-          <h1 class='Deck-title'>Blackjack</h1>
-          <p class='subtitle'> Try to beat the dealer by getting 21</p>
-          <button className='Deck-btn' onClick={this.newGame}>New Game</button>
-          <div class='Hand-area'>
-            {hands}
-          </div>
+      <div className='Deck'>
+        <h1 class='Deck-title'>Blackjack</h1>
+        <p class='subtitle'> Try to beat the dealer by getting 21</p>
+        <button className='Deck-btn' onClick={this.newGame}>New Game</button>
+        <div class='Hand-area'>
+          {hands}
         </div>
+      </div>
     )
   }
 }

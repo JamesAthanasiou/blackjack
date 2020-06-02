@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Card from './Card';
+import LoserBanner from './LoserBanner';
 import axios from 'axios';
 import './Hand.css';
 
@@ -9,7 +10,11 @@ class Hand extends Component{
     this.state = {deck: this.props.deck, drawn:[], total: 0, lose: false};
     this.getCard = this.getCard.bind(this);
   }
-
+  // TODO deck hasn't loaded yet, wont work
+  // async componentDidMount(){
+  //   this.getCard();
+  //   this.getCard();
+  // }
   async getCard(){
     let deck_id = this.props.deck.deck_id;
     try {
@@ -22,7 +27,7 @@ class Hand extends Component{
       } else {
         let card = cardRes.data.cards[0];
         var cardAbsValue = 0;
-        if (['ACE', 'KING', 'QUEEN', 'JACK'].some(res => res.includes(card.value))) {
+        if (['KING', 'QUEEN', 'JACK'].some(res => res.includes(card.value))) {
           cardAbsValue = 10;
         } else if ('ACE' === card.value){
           cardAbsValue = 11;
@@ -65,7 +70,7 @@ class Hand extends Component{
 
   // TODO
   lose() {
-    alert('You BUSTED');
+    console.log("You Lose")
   }
 
   // TODO
@@ -87,12 +92,20 @@ class Hand extends Component{
     // build array of card props
     const cards = this.state.drawn.map ( c =>(
       <Card key={c.id} name={c.name} image={c.image}/>
-    ))
+    ));
+    let banner;
+    if (this.state.lose === true) {
+      banner = <LoserBanner />
+    } else {
+      banner = null;
+    }
+
     return (
       <div class='Hand'>
         <div className='Hand-Card-Area'>{cards}</div>
         <button className='Hand-btn' onClick={this.getCard}>Hit Me</button>
-        <button className='Hand-btn' onClick={this.stay}>Stay</button>
+        <button className='Hand-btn' onClick={this.stay} disabled>Stay</button>
+        {banner}
       </div>
     )
   }
