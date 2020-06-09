@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
 import Hand from './Hand';
 import axios from 'axios';
-import './Deck.css';
+import './Game.css';
 
 const API_BASE_URL = 'http://deckofcardsapi.com/api/deck'; 
-const numHands = 2;
+// TODO. Use socket.io to add multiple players. For now just 1 player.
+const numHands = 1;
 
-class Deck extends Component{
+class Game extends Component{
   constructor(props){
     super(props);
     this.state = {
@@ -18,11 +19,12 @@ class Deck extends Component{
 
   // TODO: clear old cards
   async componentDidMount(){
-    this.newGame();
+    await this.newGame();
   }
 
   async newGame() {
-    let deck = await axios.get(`${API_BASE_URL}/new/shuffle/`);
+    // Blackjack uses 6 decks as standard.
+    let deck = await axios.get(`${API_BASE_URL}/new/shuffle/?deck_count=6`);
     this.setState(() => ({
       deck: deck.data
     }));
@@ -30,14 +32,18 @@ class Deck extends Component{
 
   render() {
     const hands = [];
+    // Add dealer hand first
+    hands.push(<Hand API_BASE_URL={API_BASE_URL} deck={this.state.deck} dealer={false} />)
+    // Add player hands
     for (let i = 0; i < numHands; i++){
-      hands.push(<Hand API_BASE_URL={API_BASE_URL} deck={this.state.deck}/>)
+      hands.push(<Hand API_BASE_URL={API_BASE_URL} deck={this.state.deck} dealer={false} />)
     }
+
     return (
-      <div className='Deck'>
-        <h1 class='Deck-title'>Blackjack</h1>
+      <div className='Game'>
+        <h1 class='Game-title'>Blackjack</h1>
         <p class='subtitle'> Try to beat the dealer by getting 21</p>
-        <button className='Deck-btn' onClick={this.newGame}>New Game</button>
+        <button className='Game-btn' onClick={this.newGame}>New Game</button>
         <div class='Hand-area'>
           {hands}
         </div>
@@ -46,4 +52,4 @@ class Deck extends Component{
   }
 }
 
-export default Deck;
+export default Game;

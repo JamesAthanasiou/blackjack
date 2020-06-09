@@ -7,15 +7,48 @@ import './Hand.css';
 class Hand extends Component{
   constructor(props){
     super(props);
-    this.state = {deck: this.props.deck, drawn:[], total: 0, lose: false};
+    this.state = {deck: this.props.deck, dealer: this.props.deck, drawn:[], total: 0, lose: false, win: false, aceCount: 0};
     this.getCard = this.getCard.bind(this);
   }
-  // TODO deck hasn't loaded yet, wont work
-  // async componentDidMount(){
-  //   this.getCard();
-  //   this.getCard();
-  // }
+  // TODO deck hasn't loaded yet, wont work. Find something smarter than using timeout.
+  componentDidMount(){
+    // This doesn't work
+    // await this.getCard();
+    
+    setTimeout( () => {    
+      this.getCard();
+      this.getCard();}, 400);
+  }
+
+  componentDidUpdate() {
+    // TODO: Broken, says you lose even with an ace.
+    if (this.state.total > 21){
+      this.state.drawn.forEach(card => {
+        console.log('a');
+        console.log(this.state.aceCount);
+        if ((card.value === "ACE") && (this.state.aceCount > 0)) {
+          console.log('Has ACE');
+          this.setState ( st => ({
+            total: st.total - 10,
+            aceCount: st.aceCount - 1
+          }));
+          console.log("Reduced count");
+          console.log(this.state.total);
+        }
+      });
+      // TODO: it appears that although the the above block of code is executed, the state is not actually updated yet and this will still be considered a loss.
+      // Recheck after turning ace into a 1. Must also check that lose is false, otherwise will end up in a infinite component updating loop.
+      if ((this.state.total > 21) &&  (this.state.lose === false)) {
+        console.log(`lose with ${this.state.total}`);
+        this.lose();
+      }
+    } else if (this.state.total === 21){
+      this.win();
+    }
+  }
+
   async getCard(){
+
     let deck_id = this.props.deck.deck_id;
     try {
       let cardUrl = `${this.props.API_BASE_URL}/${deck_id}/draw/`;
@@ -32,7 +65,6 @@ class Hand extends Component{
         } else if ('ACE' === card.value){
           cardAbsValue = 11;
         }
-        
         else {
           cardAbsValue = card.value;
         }
@@ -43,34 +75,31 @@ class Hand extends Component{
             {
               id: card.code,
               image: card.image,
-              name: `${card.value} of ${card.suit}`
+              name: `${card.value} of ${card.suit}`,
+              value: card.value
             }
           ]
         }));
         this.setState(st => ({
           total: st.total + parseInt(cardAbsValue)
         }));
+        if (card.value === "ACE") {
+          this.state.aceCount++;
+          console.log(`Ace Count is ${this.state.aceCount}`);
+        }
       }
       console.log(`Current total: ${this.state.total}`);
     } catch (err){
       console.log(err);
     }
-
-    // TODO: Broken, says you lose before it displays 21.
-    if (this.state.total > 21){
-      // TODO: Add condition that if bust with an ace, take off 10 from total
-      this.setState(st => ({
-        lose: true
-      }));
-      this.lose();
-    } else if (this.state.total === 21){
-      this.win();
-    }
   }
 
   // TODO
   lose() {
-    console.log("You Lose")
+    this.setState( st => ({
+      lose: true
+    }));
+    console.log("You Lose");
   }
 
   // TODO
@@ -87,6 +116,8 @@ class Hand extends Component{
       alert('You Win!');
     }
   }
+  
+  /* DEALER METHODS */
 
   render() {
     // build array of card props
