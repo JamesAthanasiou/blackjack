@@ -41,10 +41,10 @@ class Game extends Component{
 
     return (
       <div className='Game'>
-        <h1 class='Game-title'>Blackjack</h1>
-        <p class='subtitle'> Try to beat the dealer by getting 21</p>
+        <h1 className='Game-title'>Blackjack</h1>
+        <p className='subtitle'> Try to beat the dealer by getting 21</p>
         <button className='Game-btn' onClick={this.newGame}>New Game</button>
-        <div class='Hand-area'>
+        <div className='Hand-area'>
           {hands}
         </div>
       </div>

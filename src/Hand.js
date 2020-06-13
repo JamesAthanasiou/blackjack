@@ -21,30 +21,7 @@ class Hand extends Component{
   }
 
   componentDidUpdate() {
-    // TODO: Broken, says you lose even with an ace.
-    if (this.state.total > 21){
-      this.state.drawn.forEach(card => {
-        console.log('a');
-        console.log(this.state.aceCount);
-        if ((card.value === "ACE") && (this.state.aceCount > 0)) {
-          console.log('Has ACE');
-          this.setState ( st => ({
-            total: st.total - 10,
-            aceCount: st.aceCount - 1
-          }));
-          console.log("Reduced count");
-          console.log(this.state.total);
-        }
-      });
-      // TODO: it appears that although the the above block of code is executed, the state is not actually updated yet and this will still be considered a loss.
-      // Recheck after turning ace into a 1. Must also check that lose is false, otherwise will end up in a infinite component updating loop.
-      if ((this.state.total > 21) &&  (this.state.lose === false)) {
-        console.log(`lose with ${this.state.total}`);
-        this.lose();
-      }
-    } else if (this.state.total === 21){
-      this.win();
-    }
+    // Move check total out of here because no point in checking both hands when the other player hits.
   }
 
   async getCard(){
@@ -92,14 +69,49 @@ class Hand extends Component{
     } catch (err){
       console.log(err);
     }
+    this.checkTotal();
+  }
+
+  // TODO: Compare hand with dealer
+  checkTotal() {
+    // If bust
+    if (this.state.total > 21){
+      // Check cards for an ace
+      this.state.drawn.forEach(card => {
+        // If card is an ace, reduce total
+        if ((card.value === "ACE") && (this.state.aceCount > 0)) {
+          this.setState ( st => ({
+            total: st.total - 10,
+            aceCount: st.aceCount - 1
+          }));
+          console.log("Reduced count");
+          console.log(this.state.total);
+          // If reduced number is 21, win
+          if (this.state.total === 21) {
+            this.win();
+          } 
+        } 
+      });
+      if (this.state.total > 21) { 
+        this.lose();
+      } else if (this.state.total === 21) {
+        this.win();
+      }
+    // If the total is 21, win
+    } else if (this.state.total === 21){
+      this.win();
+    }
+    // Do nothing if total is < 21
   }
 
   // TODO
   lose() {
-    this.setState( st => ({
-      lose: true
-    }));
-    console.log("You Lose");
+    if (this.state.lose === false) {
+      this.setState( st => ({
+        lose: true
+      }));
+      console.log("You Lose");
+    }
   }
 
   // TODO
@@ -132,7 +144,7 @@ class Hand extends Component{
     }
 
     return (
-      <div class='Hand'>
+      <div className='Hand'>
         <div className='Hand-Card-Area'>{cards}</div>
         <button className='Hand-btn' onClick={this.getCard}>Hit Me</button>
         <button className='Hand-btn' onClick={this.stay} disabled>Stay</button>
