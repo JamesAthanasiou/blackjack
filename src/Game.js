@@ -33,7 +33,7 @@ class Game extends Component{
   render() {
     const hands = [];
     // Add dealer hand first
-    hands.push(<Hand API_BASE_URL={API_BASE_URL} deck={this.state.deck} dealer={false} />)
+    hands.push(<Hand API_BASE_URL={API_BASE_URL} deck={this.state.deck} dealer={true} />)
     // Add player hands
     for (let i = 0; i < numHands; i++){
       hands.push(<Hand API_BASE_URL={API_BASE_URL} deck={this.state.deck} dealer={false} />)

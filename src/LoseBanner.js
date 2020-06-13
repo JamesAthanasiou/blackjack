@@ -1,18 +1,18 @@
 import React, { Component } from 'react';
-import './LoserBanner.css';
+import './LoseBanner.css';
 
-class LoserBanner extends Component {
+class LoseBanner extends Component {
   constructor(props){
     super(props);
   }
 
   render() {
     return(
-      <div class='loser'>
+      <div class='LoseBanner'>
         You Busted!
       </div>
     )
   }
 }
 
-export default LoserBanner;
+export default LoseBanner;

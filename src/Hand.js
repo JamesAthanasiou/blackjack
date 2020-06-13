@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Card from './Card';
-import LoserBanner from './LoserBanner';
+import LoseBanner from './LoseBanner';
+import WinBanner from './WinBanner';
 import axios from 'axios';
 import './Hand.css';
 
@@ -20,12 +21,7 @@ class Hand extends Component{
       this.getCard();}, 400);
   }
 
-  componentDidUpdate() {
-    // Move check total out of here because no point in checking both hands when the other player hits.
-  }
-
   async getCard(){
-
     let deck_id = this.props.deck.deck_id;
     try {
       let cardUrl = `${this.props.API_BASE_URL}/${deck_id}/draw/`;
@@ -122,15 +118,15 @@ class Hand extends Component{
   //TODO
   // set up dealer and include win conditions other than just hitting 21
   win() {
-    if (this.state.total === 21){
-      alert('BLACKJACK! YOU WIN!');
-    } else {
-      alert('You Win!');
+    if (this.state.win === false) {
+      this.setState( st => ({
+        win: true
+      }));
     }
   }
   
   /* DEALER METHODS */
-
+  
   render() {
     // build array of card props
     const cards = this.state.drawn.map ( c =>(
@@ -138,7 +134,9 @@ class Hand extends Component{
     ));
     let banner;
     if (this.state.lose === true) {
-      banner = <LoserBanner />
+      banner = <LoseBanner />;
+    } else if (this.state.win === true) {
+      banner = <WinBanner />;
     } else {
       banner = null;
     }
